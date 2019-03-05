@@ -147,12 +147,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="machine.h" />
+    <ClInclude Include="fla.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Automat.cpp" />
+    <ClCompile Include="fla.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="grammar.txt" />
+    <Text Include="lamda.txt" />
     <Text Include="machine.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

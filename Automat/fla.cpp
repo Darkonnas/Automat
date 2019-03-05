@@ -1,25 +1,16 @@
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <set>
 #include <map>
 #include <string>
+#include "fla.h"
 
 using namespace std;
 
-class Machine {
-	set<string> Q, F;
-	set<char> S;
-	map<pair<string, char>, set<string>> d;
-	string q0;
-
-public:
-	Machine();
-	Machine(ifstream &buffer);
-	bool Evaluate(string word);
-	void printConfiguration();
-};
-
 Machine::Machine() {
+	isDeterminated = false;
+	hasLamdaTransitions = false;
 	int nrStates;
 	cout << "Number of states: ";
 	cin >> nrStates;
@@ -41,7 +32,7 @@ Machine::Machine() {
 	int transCount;
 	cout << "Transition count: ";
 	cin >> transCount;
-	cout << "Transitions:  (format: initialState letter resultState)\n";
+	cout << "Transitions:  (format: initialState letter resultState !For lambda transitions use '~'!)\n";
 	for (int i = 0; i < transCount; ++i) {
 		string initState, finState;
 		char rule;
@@ -49,11 +40,14 @@ Machine::Machine() {
 		do {
 			validTransition = true;
 			cin >> initState >> rule >> finState;
-			if (Q.find(initState) == Q.end() || Q.find(finState) == Q.end() || S.find(rule) == S.end())
+			if (Q.find(initState) == Q.end() || Q.find(finState) == Q.end() || (S.find(rule) == S.end() && rule != '~'))
 				validTransition = false;
 			if (!validTransition)
 				cout << "Invalid transition!\n";
 		} while (!validTransition);
+		if (rule == '~') {
+			hasLamdaTransitions = true;
+		}
 		if (d.find(make_pair(initState, rule)) == d.end()) {
 			set<string> finStates;
 			finStates.insert(finState);
@@ -94,6 +88,8 @@ Machine::Machine() {
 }
 
 Machine::Machine(ifstream &buffer) {
+	isDeterminated = false;
+	hasLamdaTransitions = false;
 	int nrStates;
 	cout << "Generating machine...\n";
 	cout << "Number of states: ";
@@ -125,6 +121,9 @@ Machine::Machine(ifstream &buffer) {
 		char rule;
 		buffer >> initState >> rule >> finState;
 		cout << "\td(" << initState << "," << rule << ")=" << finState << "\n";
+		if (rule == '~') {
+			hasLamdaTransitions = true;
+		}
 		if (d.find(make_pair(initState, rule)) == d.end()) {
 			set<string> finStates;
 			finStates.insert(finState);
@@ -149,9 +148,32 @@ Machine::Machine(ifstream &buffer) {
 	cout << "\n";
 }
 
+set<string> Machine::lamdaClosure(string state) {
+	set<string> closure;
+	closure.insert(state);
+	int cardinal = 0;
+	while (cardinal != closure.size()) {
+		cardinal = closure.size();
+		set<string> nextClosure = closure;
+		for (set<string>::iterator currentState = nextClosure.begin(); currentState != nextClosure.end(); ++currentState) {
+			if (d.find(make_pair(*currentState, '~')) != d.end()) {
+				set<string> nextStates = d.at(make_pair(*currentState, '~'));
+				nextClosure.insert(nextStates.begin(), nextStates.end());
+			}
+		}
+		closure = nextClosure;
+	}
+	return closure;
+}
+
 bool Machine::Evaluate(string word) {
 	set<string> currentStates;
-	currentStates.insert(q0);
+	if (hasLamdaTransitions) {
+		currentStates = lamdaClosure(q0);
+	}
+	else {
+		currentStates.insert(q0);
+	}
 	for (string::iterator letter = word.begin(); letter != word.end(); ++letter) {
 		set<string> nextStates;
 		for (set<string>::iterator state = currentStates.begin(); state != currentStates.end(); ++state) {
@@ -163,6 +185,13 @@ bool Machine::Evaluate(string word) {
 			}
 		}
 		currentStates = nextStates;
+		if (hasLamdaTransitions) {
+			set<string> currentClosure = currentStates;
+			for (set<string>::iterator state = currentClosure.begin(); state != currentClosure.end(); ++state) {
+				set<string> closure = lamdaClosure(*state);
+				currentStates.insert(closure.begin(), closure.end());
+			}
+		}
 		if (currentStates.empty())
 			return false;
 	}
@@ -194,4 +223,106 @@ void Machine::printConfiguration() {
 	for (set<string>::iterator state = F.begin(); state != F.end(); ++state)
 		cout << *state << " ";
 	cout << "\n";
+}
+
+FormalGrammar::FormalGrammar() {
+	int cardinal;
+	cout << "Number of nonterminals: ";
+	cin >> cardinal;
+	cout << "Nonterminals: ";
+	for (int i = 0; i < cardinal; ++i) {
+		string nonterminal;
+		cin >> nonterminal;
+		N.insert(nonterminal);
+	}
+	cout << "Number of terminals: ";
+	cin >> cardinal;
+	cout << "Terminals: ";
+	for (int i = 0; i < cardinal; ++i) {
+		char terminal;
+		cin >> terminal;
+		T.insert(terminal);
+	}
+	cout << "Axiom: ";
+	cin >> S;
+	cout << "Number of productions: ";
+	cin >> cardinal;
+	cout << "Productions: (Format: Nonterminal->~ / Nonterminal->terminal / Nonterminal->terminalNonterminal)\n";
+
+	for (int i = 0; i < cardinal; ++i) {
+		string production;
+		cin >> production;
+		istringstream prodStream(production);
+		char initNonterm, Term, destNonterm = 0;
+		prodStream >> initNonterm;
+		prodStream.ignore(2, '>');
+		prodStream >> Term >> destNonterm;
+		P.insert(make_tuple(initNonterm, Term, destNonterm));
+	}
+	cout << "Generated grammar!\n";
+}
+
+FormalGrammar::FormalGrammar(ifstream &buffer) {
+	int cardinal;
+	cout << "Number of nonterminals: ";
+	buffer >> cardinal;
+	cout << cardinal << '\n';
+	cout << "Nonterminals: ";
+	for (int i = 0; i < cardinal; ++i) {
+		string nonterminal;
+		buffer >> nonterminal;
+		cout << nonterminal << ' ';
+		N.insert(nonterminal);
+	}
+	cout << "\nNumber of terminals: ";
+	buffer >> cardinal;
+	cout << cardinal << '\n';
+	cout << "Terminals: ";
+	for (int i = 0; i < cardinal; ++i) {
+		char terminal;
+		buffer >> terminal;
+		cout << terminal << ' ';
+		T.insert(terminal);
+	}
+	cout << "\nAxiom: ";
+	buffer >> S;
+	cout << S << '\n';
+	cout << "Number of productions: ";
+	buffer >> cardinal;
+	cout << cardinal << '\n';
+	cout << "Productions: (Format: Nonterminal->~ / Nonterminal->terminal / Nonterminal->terminalNonterminal)\n";
+
+	for (int i = 0; i < cardinal; ++i) {
+		string production;
+		buffer >> production;
+		cout << production << '\n';
+		istringstream prodStream(production);
+		char initNonterm, Term, destNonterm = 0;
+		prodStream >> initNonterm;
+		prodStream.ignore(2, '>');
+		prodStream >> Term >> destNonterm;
+		P.insert(make_tuple(initNonterm, Term, destNonterm));
+	}
+	cout << "Generated grammar!\n";
+}
+
+void FormalGrammar::printConfiguration() {
+	cout << "-----\Grammar configuration:\n\n";
+	cout << "Number of nonterminals: " << N.size() << '\n';
+	cout << "Nonterminals: ";
+	for (set<string>::iterator nonterminal = N.begin(); nonterminal != N.end(); ++nonterminal) {
+		cout << *nonterminal << ' ';
+	}
+	cout << "\nNumber of terminals: " << T.size() << '\n';
+	cout << "Terminals: ";
+	for (set<char>::iterator terminal = T.begin(); terminal != T.end(); ++terminal) {
+		cout << *terminal << ' ';
+	}
+	cout << "\nAxiom: " << S << '\n';
+	cout << "Productions count: " << P.size() << '\n';
+	cout << "Productions:\n";
+	for (set<tuple<char,char,char>>::iterator production = P.begin(); production != P.end(); ++production) {
+		cout << get<0>(*production) << "->" << get<1>(*production) << get<2>(*production) << '\n';
+	}
+	cout << '\n';
 }

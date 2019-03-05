@@ -2,14 +2,14 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include "machine.h"
+#include "fla.h"
 
 using namespace std;
 
 int main() {
 	int decision;
 	do {
-		cout << "Please choose one of the options below:\n\t1. Initialize Machine from file\n\t2. Initialize Machine manually\n\t3. Exit the program\nYour choice: ";
+		cout << "Please choose one of the options below:\n\t1. Initialize Machine from file\n\t2. Initialize Machine manually\n\t3. Initialize Grammar from file\n\t4. Initialize Grammar Manually\n\t5. Exit the program\nYour choice: ";
 		cin >> decision;
 		switch (decision) {
 		case 1: {
@@ -64,6 +64,24 @@ int main() {
 			break;
 		}
 		case 3: {
+			string inputFile;
+			ifstream buffer;
+			do {
+				cout << "Input file used for grammar initialization: ";
+				cin >> inputFile;
+				buffer.open(inputFile);
+				if (!buffer.is_open())
+					cout << "Cannot open specified file!\n";
+			} while (!buffer.is_open());
+			FormalGrammar FG(buffer);
+			break;
+		}
+		case 4: {
+			FormalGrammar FG;
+			FG.printConfiguration();
+			break;
+		}
+		case 5: {
 			cout << "Have a good day!";
 			break;
 		}
@@ -72,6 +90,6 @@ int main() {
 			break;
 		}
 		}
-	} while (decision > 3);
+	} while (decision > 5);
 	return 0;
 }

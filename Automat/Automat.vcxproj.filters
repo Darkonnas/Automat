@@ -18,14 +18,23 @@
     <ClCompile Include="Automat.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="fla.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="machine.txt">
       <Filter>Resource Files</Filter>
     </Text>
+    <Text Include="grammar.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="lamda.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="machine.h">
+    <ClInclude Include="fla.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -225,13 +225,13 @@ void Machine::printConfiguration() {
 	cout << "\n";
 }
 
-FormalGrammar::FormalGrammar() {
+RegularGrammar::RegularGrammar() {
 	int cardinal;
 	cout << "Number of nonterminals: ";
 	cin >> cardinal;
 	cout << "Nonterminals: ";
 	for (int i = 0; i < cardinal; ++i) {
-		string nonterminal;
+		char nonterminal;
 		cin >> nonterminal;
 		N.insert(nonterminal);
 	}
@@ -262,14 +262,14 @@ FormalGrammar::FormalGrammar() {
 	cout << "Generated grammar!\n";
 }
 
-FormalGrammar::FormalGrammar(ifstream &buffer) {
+RegularGrammar::RegularGrammar(ifstream &buffer) {
 	int cardinal;
 	cout << "Number of nonterminals: ";
 	buffer >> cardinal;
 	cout << cardinal << '\n';
 	cout << "Nonterminals: ";
 	for (int i = 0; i < cardinal; ++i) {
-		string nonterminal;
+		char nonterminal;
 		buffer >> nonterminal;
 		cout << nonterminal << ' ';
 		N.insert(nonterminal);
@@ -306,11 +306,33 @@ FormalGrammar::FormalGrammar(ifstream &buffer) {
 	cout << "Generated grammar!\n";
 }
 
-void FormalGrammar::printConfiguration() {
+bool RegularGrammar::Evaluate(string word) {
+	set<char> currentNonterms;
+	currentNonterms.insert(S);
+	for (string::iterator letter = word.begin(); letter != word.end(); ++letter) {
+		set<char> nextNonterms;
+		for (set<tuple<char, char, char>>::iterator production = P.begin(); production != P.end(); ++production) {
+			char initNonterm = get<0>(*production);
+			char terminal = get<1>(*production);
+			char destNonterm = get<2>(*production);
+			if (currentNonterms.find(initNonterm) != currentNonterms.end() && terminal == *letter) {
+				nextNonterms.insert(destNonterm);
+			}
+		}
+		currentNonterms = nextNonterms;
+	}
+	for (set<char>::iterator nonterm = currentNonterms.begin(); nonterm != currentNonterms.end(); ++nonterm) {
+		if (*nonterm == 0 || P.find(make_tuple(*nonterm, '~', 0)) != P.end())
+			return true;
+	}
+	return false;
+}
+
+void RegularGrammar::printConfiguration() {
 	cout << "-----\Grammar configuration:\n\n";
 	cout << "Number of nonterminals: " << N.size() << '\n';
 	cout << "Nonterminals: ";
-	for (set<string>::iterator nonterminal = N.begin(); nonterminal != N.end(); ++nonterminal) {
+	for (set<char>::iterator nonterminal = N.begin(); nonterminal != N.end(); ++nonterminal) {
 		cout << *nonterminal << ' ';
 	}
 	cout << "\nNumber of terminals: " << T.size() << '\n';

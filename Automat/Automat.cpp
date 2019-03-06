@@ -33,6 +33,7 @@ int main() {
 				cin >> word;
 				words.push_back(word);
 			}
+			cout << "Results:\n";
 			for (int i = 0; i < evaluatesNo; ++i) {
 				bool result = M.Evaluate(words[i]);
 				if (result)
@@ -54,6 +55,7 @@ int main() {
 				cin >> word;
 				words.push_back(word);
 			}
+			cout << "Results:\n";
 			for (int i = 0; i < evaluatesNo; ++i) {
 				bool result = M.Evaluate(words[i]);
 				if (result)
@@ -73,12 +75,47 @@ int main() {
 				if (!buffer.is_open())
 					cout << "Cannot open specified file!\n";
 			} while (!buffer.is_open());
-			FormalGrammar FG(buffer);
+			RegularGrammar RG(buffer);
+			int evaluatesNo;
+			vector<string> words;
+			cout << "How many words do you wish to evaluate? ";
+			cin >> evaluatesNo;
+			cout << "Words to evaluate: \n";
+			for (int i = 0; i < evaluatesNo; ++i) {
+				string word;
+				cin >> word;
+				words.push_back(word);
+			}
+			cout << "Results:\n";
+			for (int i = 0; i < evaluatesNo; ++i) {
+				bool result = RG.Evaluate(words[i]);
+				if (result)
+					cout << words[i] << " was accepted!\n";
+				else
+					cout << words[i] << " was rejected!\n";
+			}
 			break;
 		}
 		case 4: {
-			FormalGrammar FG;
-			FG.printConfiguration();
+			RegularGrammar RG;
+			int evaluatesNo;
+			vector<string> words;
+			cout << "How many words do you wish to evaluate? ";
+			cin >> evaluatesNo;
+			cout << "Words to evaluate: \n";
+			for (int i = 0; i < evaluatesNo; ++i) {
+				string word;
+				cin >> word;
+				words.push_back(word);
+			}
+			cout << "Results:\n";
+			for (int i = 0; i < evaluatesNo; ++i) {
+				bool result = RG.Evaluate(words[i]);
+				if (result)
+					cout << words[i] << " was accepted!\n";
+				else
+					cout << words[i] << " was rejected!\n";
+			}
 			break;
 		}
 		case 5: {

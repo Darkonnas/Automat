@@ -8,7 +8,7 @@
 using namespace std;
 
 class Machine {
-	friend class FormalGrammar;
+	friend class RegularGrammar;
 	set<string> Q, F;
 	set<char> S;
 	map<pair<string, char>, set<string>> d;
@@ -19,23 +19,23 @@ class Machine {
 public:
 	Machine();
 	Machine(ifstream &buffer);
-	Machine(FormalGrammar &grammar);
+	Machine(RegularGrammar &grammar);
 	set<string> lamdaClosure(string state);
 	bool Evaluate(string word);
 	void printConfiguration();
 };
 
-class FormalGrammar {
+class RegularGrammar {
 	friend class Machine;
-	set<string> N;
+	set<char> N;
 	set<char> T;
-	string S;
+	char S;
 	set<tuple<char, char, char>> P;
 
 public:
-	FormalGrammar();
-	FormalGrammar(ifstream &buffer);
-	FormalGrammar(Machine &machine);
+	RegularGrammar();
+	RegularGrammar(ifstream &buffer);
+	RegularGrammar(Machine &machine);
 	bool Evaluate(string word);
 	void printConfiguration();
 };

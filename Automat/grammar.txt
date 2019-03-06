@@ -1,9 +1,10 @@
-2
-S A
+3
+S A B
 1
 a
 S
-3
+4
 S->aA
-A->aS
-A->a
+A->aB
+B->aA
+B->a

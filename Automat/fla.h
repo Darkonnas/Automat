@@ -23,6 +23,7 @@ public:
 	set<string> lamdaClosure(string state);
 	bool Evaluate(string word);
 	void printConfiguration();
+	void convertToDFA();
 };
 
 class RegularGrammar {

@@ -9,7 +9,7 @@
 using namespace std;
 
 Machine::Machine() {
-	isDeterminated = false;
+	isDeterminated = true;
 	hasLamdaTransitions = false;
 	int nrStates;
 	cout << "Number of states: ";
@@ -54,6 +54,7 @@ Machine::Machine() {
 			d.emplace(make_pair(initState, rule), finStates);
 		}
 		else {
+			isDeterminated = false;
 			d.at(make_pair(initState, rule)).insert(finState);
 		}
 	}
@@ -84,43 +85,32 @@ Machine::Machine() {
 		} while (!validFinState);
 		F.insert(finState);
 	}
-	cout << "Generated machine!\n";
+	cout << "Generated Machine!\n";
 }
 
 Machine::Machine(ifstream &buffer) {
-	isDeterminated = false;
+	isDeterminated = true;
 	hasLamdaTransitions = false;
 	int nrStates;
-	cout << "Generating machine...\n";
-	cout << "Number of states: ";
 	buffer >> nrStates;
-	cout << nrStates << "\n";
-	cout << "States: ";
 	for (int i = 0; i < nrStates; ++i) {
 		string state;
 		buffer >> state;
-		cout << state << " ";
 		Q.insert(state);
 	}
 	int alphaDim;
-	cout << "\nAlphabet dimension: ";
 	buffer >> alphaDim;
-	cout << alphaDim << "\nLetters: ";
 	for (int i = 0; i < alphaDim; ++i) {
 		char letter;
 		buffer >> letter;
-		cout << letter << " ";
 		S.insert(letter);
 	}
 	int transCount;
-	cout << "\nTransition count: ";
 	buffer >> transCount;
-	cout << transCount << "\nTransitions:\n";
 	for (int i = 0; i < transCount; ++i) {
 		string initState, finState;
 		char rule;
 		buffer >> initState >> rule >> finState;
-		cout << "\td(" << initState << "," << rule << ")=" << finState << "\n";
 		if (rule == '~') {
 			hasLamdaTransitions = true;
 		}
@@ -130,22 +120,77 @@ Machine::Machine(ifstream &buffer) {
 			d.emplace(make_pair(initState, rule), finStates);
 		}
 		else {
+			isDeterminated = false;
 			d.at(make_pair(initState, rule)).insert(finState);
 		}
 	}
 	int finStateCount;
-	cout << "\nInitial state: ";
 	buffer >> q0;
-	cout << q0 << "\nNumber of final states: ";
 	buffer >> finStateCount;
-	cout << finStateCount << "\nFinal states: ";
 	for (int i = 0; i < finStateCount; ++i) {
 		string finState;
 		buffer >> finState;
-		cout << finState << " ";
 		F.insert(finState);
 	}
-	cout << "\n";
+	cout << "Generated Machine!\n";
+	printConfiguration();
+}
+
+Machine::Machine(RegularGrammar &grammar) {
+	isDeterminated = true;
+	hasLamdaTransitions = false;
+	map<char, string> NonTermToState;
+	NonTermToState.insert(make_pair(grammar.S, "q0"));
+	Q.insert("q0");
+	string stateCode = "q";
+	int currentState = 1;
+	for (set<char>::iterator currentNonTerm = grammar.N.begin(); currentNonTerm != grammar.N.end(); ++currentNonTerm) {
+		if (NonTermToState.find(*currentNonTerm) == NonTermToState.end()) {
+			Q.insert(stateCode + to_string(currentState));
+			NonTermToState.insert(make_pair(*currentNonTerm, stateCode + to_string(currentState)));
+			++currentState;
+		}
+	}
+	S = grammar.T;
+	q0 = grammar.S;
+	for (set<tuple<char, char, char>>::iterator currentProduction = grammar.P.begin(); currentProduction != grammar.P.end(); ++currentProduction) {
+		string initState = NonTermToState.at(get<0>(*currentProduction));
+		char rule = get<1>(*currentProduction);
+		if (rule != '~' && get<2>(*currentProduction) != 0) {
+			string destState = NonTermToState.at(get<2>(*currentProduction));
+			if (d.find(make_pair(initState, rule)) == d.end()) {
+				set<string> destStates;
+				destStates.insert(destState);
+				d.emplace(make_pair(initState, rule), destStates);
+			}
+			else {
+				isDeterminated = false;
+				d.at(make_pair(initState, rule)).insert(destState);
+			}
+		}
+		else {
+			if(rule != '~'){
+				string destState;
+				cout << "Input destination state (member of Q) manually for tranzition: d(" << initState << "," << rule << ")=";
+				cin >> destState;
+				if (d.find(make_pair(initState, rule)) == d.end()) {
+					set<string> destStates;
+					destStates.insert(destState);
+					d.emplace(make_pair(initState, rule), destStates);
+				}
+				else {
+					isDeterminated = false;
+					d.at(make_pair(initState, rule)).insert(destState);
+				}
+				F.insert(destState);
+			}
+			else {
+				F.insert(initState);
+			}
+		}
+	}
+	cout << "Generated Machine!\n";
+	printConfiguration();
 }
 
 set<string> Machine::lamdaClosure(string state) {
@@ -180,8 +225,7 @@ bool Machine::Evaluate(string word) {
 			map<pair<string, char>, set<string>>::iterator transition = d.find(make_pair(*state, *letter));
 			if (transition != d.end()) {
 				set<string> transitions = d.at(make_pair(*state, *letter));
-				for (set<string>::iterator nextState = transitions.begin(); nextState != transitions.end(); ++nextState)
-					nextStates.insert(*nextState);
+				nextStates.insert(transitions.begin(), transitions.end());
 			}
 		}
 		currentStates = nextStates;
@@ -222,7 +266,11 @@ void Machine::printConfiguration() {
 	cout << "Final states: ";
 	for (set<string>::iterator state = F.begin(); state != F.end(); ++state)
 		cout << *state << " ";
-	cout << "\n";
+	cout << "\n-----\n";
+}
+
+void Machine::convertToDFA() {
+
 }
 
 RegularGrammar::RegularGrammar() {
@@ -264,38 +312,24 @@ RegularGrammar::RegularGrammar() {
 
 RegularGrammar::RegularGrammar(ifstream &buffer) {
 	int cardinal;
-	cout << "Number of nonterminals: ";
 	buffer >> cardinal;
-	cout << cardinal << '\n';
-	cout << "Nonterminals: ";
 	for (int i = 0; i < cardinal; ++i) {
 		char nonterminal;
 		buffer >> nonterminal;
-		cout << nonterminal << ' ';
 		N.insert(nonterminal);
 	}
-	cout << "\nNumber of terminals: ";
 	buffer >> cardinal;
-	cout << cardinal << '\n';
-	cout << "Terminals: ";
 	for (int i = 0; i < cardinal; ++i) {
 		char terminal;
 		buffer >> terminal;
-		cout << terminal << ' ';
 		T.insert(terminal);
 	}
-	cout << "\nAxiom: ";
 	buffer >> S;
-	cout << S << '\n';
-	cout << "Number of productions: ";
 	buffer >> cardinal;
-	cout << cardinal << '\n';
-	cout << "Productions: (Format: Nonterminal->~ / Nonterminal->terminal / Nonterminal->terminalNonterminal)\n";
 
 	for (int i = 0; i < cardinal; ++i) {
 		string production;
 		buffer >> production;
-		cout << production << '\n';
 		istringstream prodStream(production);
 		char initNonterm, Term, destNonterm = 0;
 		prodStream >> initNonterm;
@@ -303,7 +337,8 @@ RegularGrammar::RegularGrammar(ifstream &buffer) {
 		prodStream >> Term >> destNonterm;
 		P.insert(make_tuple(initNonterm, Term, destNonterm));
 	}
-	cout << "Generated grammar!\n";
+	cout << "Generated Grammar!\n";
+	printConfiguration();
 }
 
 bool RegularGrammar::Evaluate(string word) {
@@ -329,7 +364,7 @@ bool RegularGrammar::Evaluate(string word) {
 }
 
 void RegularGrammar::printConfiguration() {
-	cout << "-----\Grammar configuration:\n\n";
+	cout << "-----\nGrammar configuration:\n\n";
 	cout << "Number of nonterminals: " << N.size() << '\n';
 	cout << "Nonterminals: ";
 	for (set<char>::iterator nonterminal = N.begin(); nonterminal != N.end(); ++nonterminal) {
@@ -346,5 +381,5 @@ void RegularGrammar::printConfiguration() {
 	for (set<tuple<char,char,char>>::iterator production = P.begin(); production != P.end(); ++production) {
 		cout << get<0>(*production) << "->" << get<1>(*production) << get<2>(*production) << '\n';
 	}
-	cout << '\n';
+	cout << "-----\n";
 }

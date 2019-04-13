@@ -258,9 +258,20 @@ void Machine::printConfiguration() {
 		cout << *letter << " ";
 	cout << "\nTransition count: " << d.size() << "\n";
 	cout << "Transitions:\n";
-	for (map<pair<string, char>, set<string>>::iterator transition = d.begin(); transition != d.end(); ++transition)
-		for (set<string>::iterator state = (*transition).second.begin(); state != (*transition).second.end(); ++state)
-			cout << "d(" << (*transition).first.first << "," << (*transition).first.second << ")=" << *state << "\n";
+	for (map<pair<string, char>, set<string>>::iterator transition = d.begin(); transition != d.end(); ++transition) {
+		if(isDeterminated)
+		    for (set<string>::iterator state = (*transition).second.begin(); state != (*transition).second.end(); ++state)
+			    cout << "d(" << (*transition).first.first << "," << (*transition).first.second << ")=" << *state << "\n";
+		else {
+			cout << "d(" << (*transition).first.first << "," << (*transition).first.second << ")={";
+			for (set<string>::iterator state = (*transition).second.begin(); state != (*transition).second.end();) {
+				cout << *state;
+				if (++state != (*transition).second.end())
+					cout << ",";
+			}
+			cout << "}\n";
+		}
+	}
 	cout << "Initial state: " << q0 << "\n";
 	cout << "Number of final states: " << F.size() << "\n";
 	cout << "Final states: ";

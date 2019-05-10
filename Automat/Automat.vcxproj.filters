@@ -23,22 +23,25 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="machine.txt">
-      <Filter>Resource Files</Filter>
-    </Text>
-    <Text Include="grammar.txt">
-      <Filter>Resource Files</Filter>
-    </Text>
     <Text Include="lamda.txt">
       <Filter>Resource Files</Filter>
     </Text>
-    <Text Include="machine_init.txt">
-      <Filter>Resource Files</Filter>
-    </Text>
-    <Text Include="grammar_init.txt">
-      <Filter>Resource Files</Filter>
-    </Text>
     <Text Include="push_down_automata.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="regular_automata.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="regular_automata_init.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="regular_grammar.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="regular_grammar_init.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="push_down_automata_init.txt">
       <Filter>Resource Files</Filter>
     </Text>
   </ItemGroup>

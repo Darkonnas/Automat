@@ -88,7 +88,7 @@ RegularAutomata::RegularAutomata() {
 	cout << "Generated RegularAutomata!\n";
 }
 
-RegularAutomata::RegularAutomata(ifstream &buffer) {
+RegularAutomata::RegularAutomata(ifstream & buffer) {
 	hasNondeterminism = false;
 	hasLambdaTransitions = false;
 	int nrStates;
@@ -132,11 +132,11 @@ RegularAutomata::RegularAutomata(ifstream &buffer) {
 		buffer >> finState;
 		F.insert(finState);
 	}
-	cout << "Generated RegularAutomata!\n";
+	cout << "Generated Regular Automata!\n";
 	printConfiguration();
 }
 
-RegularAutomata::RegularAutomata(RegularGrammar &grammar) {
+RegularAutomata::RegularAutomata(RegularGrammar & grammar) {
 	hasNondeterminism = false;
 	hasLambdaTransitions = false;
 	map<char, string> NonTermToState;
@@ -169,7 +169,7 @@ RegularAutomata::RegularAutomata(RegularGrammar &grammar) {
 			}
 		}
 		else {
-			if(rule != '~'){
+			if (rule != '~') {
 				string destState;
 				cout << "Input destination state (member of Q) manually for tranzition: d(" << initState << "," << rule << ")=";
 				cin >> destState;
@@ -189,14 +189,14 @@ RegularAutomata::RegularAutomata(RegularGrammar &grammar) {
 			}
 		}
 	}
-	cout << "Generated RegularAutomata!\n";
+	cout << "Generated Regular Automata!\n";
 	printConfiguration();
 }
 
 set<string> RegularAutomata::lambdaClosure(string state) {
 	set<string> closure;
 	closure.insert(state);
-	int cardinal = 0;
+	unsigned int cardinal = 0;
 	while (cardinal != closure.size()) {
 		cardinal = closure.size();
 		set<string> nextClosure = closure;
@@ -267,9 +267,9 @@ void RegularAutomata::printConfiguration() {
 	cout << "\nTransition count: " << d.size() << "\n";
 	cout << "Transitions:\n";
 	for (map<pair<string, char>, set<string>>::iterator transition = d.begin(); transition != d.end(); ++transition) {
-		if(!hasNondeterminism)
-		    for (set<string>::iterator state = (*transition).second.begin(); state != (*transition).second.end(); ++state)
-			    cout << "d(" << (*transition).first.first << "," << (*transition).first.second << ")=" << *state << "\n";
+		if (!hasNondeterminism)
+			for (set<string>::iterator state = (*transition).second.begin(); state != (*transition).second.end(); ++state)
+				cout << "d(" << (*transition).first.first << "," << (*transition).first.second << ")=" << *state << "\n";
 		else {
 			cout << "d(" << (*transition).first.first << "," << (*transition).first.second << ")={";
 			for (set<string>::iterator state = (*transition).second.begin(); state != (*transition).second.end();) {
@@ -326,10 +326,10 @@ RegularGrammar::RegularGrammar() {
 		prodStream >> Term >> destNonterm;
 		P.insert(make_tuple(initNonterm, Term, destNonterm));
 	}
-	cout << "Generated grammar!\n";
+	cout << "Generated Regular Grammar!\n";
 }
 
-RegularGrammar::RegularGrammar(ifstream &buffer) {
+RegularGrammar::RegularGrammar(ifstream & buffer) {
 	int cardinal;
 	buffer >> cardinal;
 	for (int i = 0; i < cardinal; ++i) {
@@ -356,7 +356,7 @@ RegularGrammar::RegularGrammar(ifstream &buffer) {
 		prodStream >> Term >> destNonterm;
 		P.insert(make_tuple(initNonterm, Term, destNonterm));
 	}
-	cout << "Generated Grammar!\n";
+	cout << "Generated Regular Grammar!\n";
 	printConfiguration();
 }
 
@@ -397,7 +397,7 @@ void RegularGrammar::printConfiguration() {
 	cout << "\nAxiom: " << S << '\n';
 	cout << "Productions count: " << P.size() << '\n';
 	cout << "Productions:\n";
-	for (set<tuple<char,char,char>>::iterator production = P.begin(); production != P.end(); ++production) {
+	for (set<tuple<char, char, char>>::iterator production = P.begin(); production != P.end(); ++production) {
 		cout << get<0>(*production) << "->" << get<1>(*production) << get<2>(*production) << '\n';
 	}
 	cout << "-----\n";
@@ -483,7 +483,7 @@ PushDownAutomata::PushDownAutomata() {
 			cin >> initState >> letter >> stackTop >> finState >> stackPush;
 			if (Q.find(initState) == Q.end() || (S.find(letter) == S.end() && letter != '~') || G.find(stackTop) == G.end() || Q.find(finState) == Q.end())
 				validTransition = false;
-			for(string::iterator character = stackPush.begin(); character != stackPush.end(); ++character)
+			for (string::iterator character = stackPush.begin(); character != stackPush.end(); ++character)
 				if (G.find(*character) == G.end()) {
 					validTransition = false;
 					break;
@@ -496,7 +496,7 @@ PushDownAutomata::PushDownAutomata() {
 		}
 		if (d.find(make_tuple(initState, letter, stackTop)) == d.end()) {
 			map<string, set<string>> finConfigurations;
-			set<string> auxSet; 
+			set<string> auxSet;
 			auxSet.insert(stackPush);
 			finConfigurations.insert(make_pair(finState, auxSet));
 			d.emplace(make_tuple(initState, letter, stackTop), finConfigurations);
@@ -513,7 +513,7 @@ PushDownAutomata::PushDownAutomata() {
 			}
 		}
 	}
-	cout << "Generated PushDownAutomata!\n";
+	cout << "Generated PushDown Automata!\n";
 }
 
 PushDownAutomata::PushDownAutomata(ifstream & buffer) {
@@ -577,67 +577,103 @@ PushDownAutomata::PushDownAutomata(ifstream & buffer) {
 			}
 		}
 	}
-	cout << "Generated RegularAutomata!\n";
+	cout << "Generated PushDown Automata!\n";
 	printConfiguration();
 }
 
- /*map<string, set<stack<char>>> PushDownAutomata::lambdaClosure(pair<string, set<stack<char>>> initConfiguration) {
+map<string, set<stack<char>>> PushDownAutomata::lambdaClosure(pair<string, set<stack<char>>> initConfiguration) {
 	map<string, set<stack<char>>> closureConfigurations;
 	closureConfigurations.emplace(initConfiguration.first, initConfiguration.second);
-	int cardinal = 0;
+	unsigned int cardinal = 0;
 	while (cardinal != closureConfigurations.size()) {
 		cardinal = closureConfigurations.size();
 		map<string, set<stack<char>>> nextClosureConfigurations = closureConfigurations;
-		for (map<string, set<stack<char>>>::iterator currentConfiguration = nextClosureConfigurations.begin(); currentConfiguration != nextClosureConfigurations.end(); ++currentConfiguration) {
+		for (map<string, set<stack<char>>>::iterator currentConfiguration = closureConfigurations.begin(); currentConfiguration != closureConfigurations.end(); ++currentConfiguration) {
 			for (set<stack<char>>::iterator currentStack = currentConfiguration->second.begin(); currentStack != currentConfiguration->second.end(); ++currentStack) {
-				if (d.find(make_tuple(currentConfiguration->first, '~', currentStack->top())) != d.end()) {
-					for(stack<string>::iterator stackPush = )
-					stack<char> nextStack = *currentStack;
-					nextStack.pop();
-					nextStack.insert(d.at(make_tuple(currentConfiguration->first, '~', currentStack->top())))
-					nextClosure.insert(nextStates.begin(), nextStates.end());
+				if (currentStack->empty())
+					continue;
+				map<tuple<string, char, char>, map<string, set<string>>>::iterator nextConfigurations = d.find(make_tuple(currentConfiguration->first, '~', currentStack->top()));
+				if (nextConfigurations != d.end()) {
+					for (map<string, set<string>>::iterator nextConfiguration = nextConfigurations->second.begin(); nextConfiguration != nextConfigurations->second.end(); ++nextConfiguration) {
+						if (nextClosureConfigurations.find(nextConfiguration->first) == nextClosureConfigurations.end()) {
+							set<stack<char>> auxSet;
+							nextClosureConfigurations.emplace(nextConfiguration->first, auxSet);
+						}
+						for (set<string>::iterator stackPush = nextConfiguration->second.begin(); stackPush != nextConfiguration->second.end(); ++stackPush) {
+							stack<char> nextStack = *currentStack;
+							nextStack.pop();
+							if (stackPush->at(0) != '~')
+								for (string::const_reverse_iterator character = stackPush->rbegin(); character != stackPush->rend(); ++character)
+									nextStack.push(*character); 
+							nextClosureConfigurations.at(nextConfiguration->first).insert(nextStack);
+						}
+					}
 				}
 			}
 		}
-		closure = nextClosure;
+		closureConfigurations = nextClosureConfigurations;
 	}
-	return closure;
+	return closureConfigurations;
 }
 
-bool RegularAutomata::Evaluate(string word) {
-	set<string> currentStates;
+bool PushDownAutomata::Evaluate(string word) {
+	map<string, set<stack<char>>> currentConfigurations;
+	stack<char> auxStack;
+	auxStack.push(Z0);
+	set<stack<char>> auxSet;
+	auxSet.insert(auxStack);
 	if (hasLambdaTransitions) {
-		currentStates = lambdaClosure(q0);
+		currentConfigurations = lambdaClosure(make_pair(q0, auxSet));
 	}
 	else {
-		currentStates.insert(q0);
+		currentConfigurations.emplace(q0, auxSet);
 	}
-	for (string::iterator letter = word.begin(); letter != word.end(); ++letter) {
-		set<string> nextStates;
-		for (set<string>::iterator state = currentStates.begin(); state != currentStates.end(); ++state) {
-			map<pair<string, char>, set<string>>::iterator transition = d.find(make_pair(*state, *letter));
-			if (transition != d.end()) {
-				set<string> transitions = d.at(make_pair(*state, *letter));
-				nextStates.insert(transitions.begin(), transitions.end());
+	for (string::iterator letter = word.begin(); letter != word.end() && !currentConfigurations.empty(); ++letter) {
+		map<string, set<stack<char>>> nextConfigurations;
+		for (map<string, set<stack<char>>>::iterator configuration = currentConfigurations.begin(); configuration != currentConfigurations.end(); ++configuration) {
+			for (set<stack<char>>::iterator currentStack = configuration->second.begin(); currentStack != configuration->second.end(); ++currentStack) {
+				if (currentStack->empty())
+					continue;
+				map<tuple<string, char, char>, map<string, set<string>>>::iterator transition = d.find(make_tuple(configuration->first, *letter, currentStack->top()));
+				if (transition != d.end()) {
+					for (map<string, set<string>>::iterator nextConfiguration = transition->second.begin(); nextConfiguration != transition->second.end(); ++nextConfiguration) {
+						if (nextConfigurations.find(nextConfiguration->first) == nextConfigurations.end()) {
+							set<stack<char>> auxSet;
+							nextConfigurations.emplace(nextConfiguration->first, auxSet);
+						}
+						for (set<string>::iterator stackPush = nextConfiguration->second.begin(); stackPush != nextConfiguration->second.end(); ++stackPush) {
+							stack<char> auxStack = *currentStack;
+							auxStack.pop();
+							if (stackPush->at(0) != '~')
+								for (string::const_reverse_iterator character = stackPush->rbegin(); character != stackPush->rend(); ++character)
+									auxStack.push(*character);
+							nextConfigurations.at(nextConfiguration->first).insert(auxStack);
+						}
+					}
+				}
 			}
 		}
-		currentStates = nextStates;
+		currentConfigurations = nextConfigurations;
 		if (hasLambdaTransitions) {
-			set<string> currentClosure = currentStates;
-			for (set<string>::iterator state = currentClosure.begin(); state != currentClosure.end(); ++state) {
-				set<string> closure = lambdaClosure(*state);
-				currentStates.insert(closure.begin(), closure.end());
+			map<string, set<stack<char>>> currentClosureConfigurations = currentConfigurations;
+			for (map<string, set<stack<char>>>::iterator closureConfiguration = currentClosureConfigurations.begin(); closureConfiguration != currentClosureConfigurations.end(); ++closureConfiguration) {
+				map<string, set<stack<char>>> nextClosureConfigurations = lambdaClosure(*closureConfiguration);
+				for (map<string, set<stack<char>>>::iterator nextClosureConfiguration = nextClosureConfigurations.begin(); nextClosureConfiguration != nextClosureConfigurations.end(); ++nextClosureConfiguration) {
+					if (currentConfigurations.find(nextClosureConfiguration->first) == currentConfigurations.end()) {
+						set<stack<char>> auxSet;
+						currentConfigurations.emplace(nextClosureConfiguration->first, auxSet);
+					}
+					currentConfigurations.at(nextClosureConfiguration->first).insert(nextClosureConfiguration->second.begin(), nextClosureConfiguration->second.end());
+				}
 			}
 		}
-		if (currentStates.empty())
-			return false;
 	}
-	for (set<string>::iterator state = currentStates.begin(); state != currentStates.end(); ++state) {
-		if (F.find(*state) != F.end())
+	for (map<string, set<stack<char>>>::iterator configuration = currentConfigurations.begin(); configuration != currentConfigurations.end(); ++configuration) {
+		if (F.find(configuration->first) != F.end())
 			return true;
 	}
 	return false;
-} */
+}
 
 void PushDownAutomata::printConfiguration() {
 	cout << "-----\nMachine configuration:\n\n";
@@ -672,8 +708,8 @@ void PushDownAutomata::printConfiguration() {
 	for (map<tuple<string, char, char>, map<string, set<string>>>::iterator transition = d.begin(); transition != d.end(); ++transition) {
 		if (!hasNondeterminism)
 			for (map<string, set<string>>::iterator configuration = transition->second.begin(); configuration != transition->second.end(); ++configuration)
-				for(set<string>::iterator stackPush = configuration->second.begin(); stackPush != configuration->second.end(); ++stackPush)
-					cout << "d(" << get<0>(transition->first) << "," << get<1>(transition->first) << "," << get<2>(transition->first) << ")=(" << configuration->first << "," << *stackPush <<")\n";
+				for (set<string>::iterator stackPush = configuration->second.begin(); stackPush != configuration->second.end(); ++stackPush)
+					cout << "d(" << get<0>(transition->first) << "," << get<1>(transition->first) << "," << get<2>(transition->first) << ")=(" << configuration->first << "," << *stackPush << ")\n";
 		else {
 			cout << "d(" << get<0>(transition->first) << "," << get<1>(transition->first) << "," << get<2>(transition->first) << ")={";
 			for (map<string, set<string>>::iterator configuration = transition->second.begin(); configuration != transition->second.end(); ++configuration)

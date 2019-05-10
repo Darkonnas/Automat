@@ -6,55 +6,53 @@
 #include <tuple>
 #include <stack>
 
-using namespace std;
-
 class RegularAutomata {
 	friend class RegularGrammar;
-	set<string> Q, F;
-	set<char> S;
-	map<pair<string, char>, set<string>> d;
-	string q0;
+	std::set<std::string> Q, F;
+	std::set<char> S;
+	std::map<std::pair<std::string, char>, std::set<std::string>> d;
+	std::string q0;
 	bool hasNondeterminism;
 	bool hasLambdaTransitions;
 
 public:
 	RegularAutomata();
-	RegularAutomata(ifstream &buffer);
+	RegularAutomata(std::ifstream &buffer);
 	RegularAutomata(RegularGrammar &grammar);
-	set<string> lambdaClosure(string state);
-	bool Evaluate(string word);
+	std::set<std::string> lambdaClosure(std::string state);
+	bool Evaluate(std::string word);
 	void printConfiguration();
 	void convertToDFA();
 };
 
 class RegularGrammar {
 	friend class RegularAutomata;
-	set<char> N;
-	set<char> T;
+	std::set<char> N;
+	std::set<char> T;
 	char S;
-	set<tuple<char, char, char>> P;
+	std::set<std::tuple<char, char, char>> P;
 
 public:
 	RegularGrammar();
-	RegularGrammar(ifstream &buffer);
+	RegularGrammar(std::ifstream &buffer);
 	RegularGrammar(RegularAutomata &machine);
-	bool Evaluate(string word);
+	bool Evaluate(std::string word);
 	void printConfiguration();
 };
 
 class PushDownAutomata {
-	set<string> Q, F;
-	set<char> S, G;
-	string q0;
+	std::set<std::string> Q, F;
+	std::set<char> S, G;
+	std::string q0;
 	char Z0;
-	map<tuple<string, char, char>, map<string, set<string>>> d;
+	std::map<std::tuple<std::string, char, char>, std::map<std::string, std::set<std::string>>> d;
 	bool hasNondeterminism;
 	bool hasLambdaTransitions;
 public:
 	PushDownAutomata();
-	PushDownAutomata(ifstream& buffer);
+	PushDownAutomata(std::ifstream& buffer);
 	//PushDownAutomata(ContextFreeGrammar& grammar);
-	map<string, set<stack<char>>> lambdaClosure(pair < string, set<stack<char>>> initConfiguation);
-	bool Evaluate(string word);
+	std::map<std::string, std::set<std::stack<char>>> lambdaClosure(std::pair<std::string, std::set<std::stack<char>>> initConfiguation);
+	bool Evaluate(std::string word);
 	void printConfiguration();
 };

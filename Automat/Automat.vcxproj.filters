@@ -26,22 +26,25 @@
     <Text Include="lamda.txt">
       <Filter>Resource Files</Filter>
     </Text>
-    <Text Include="push_down_automata.txt">
+    <Text Include="pda.txt">
       <Filter>Resource Files</Filter>
     </Text>
-    <Text Include="regular_automata.txt">
+    <Text Include="pda_init.txt">
       <Filter>Resource Files</Filter>
     </Text>
-    <Text Include="regular_automata_init.txt">
+    <Text Include="ra.txt">
       <Filter>Resource Files</Filter>
     </Text>
-    <Text Include="regular_grammar.txt">
+    <Text Include="ra_init.txt">
       <Filter>Resource Files</Filter>
     </Text>
-    <Text Include="regular_grammar_init.txt">
+    <Text Include="rg.txt">
       <Filter>Resource Files</Filter>
     </Text>
-    <Text Include="push_down_automata_init.txt">
+    <Text Include="rg_init.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="pda_wwR.txt">
       <Filter>Resource Files</Filter>
     </Text>
   </ItemGroup>

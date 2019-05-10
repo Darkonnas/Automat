@@ -6,9 +6,9 @@
 #include "fla.h"
 
 int main() {
-	std::ifstream initRegularAutomata("regular_automata_init.txt");
-	std::ifstream initRegularGrammar("regular_grammar_init.txt");
-	std::ifstream initPushDownAutomata("push_down_automata_init.txt");
+	std::ifstream initRegularAutomata("ra_init.txt");
+	std::ifstream initRegularGrammar("rg_init.txt");
+	std::ifstream initPushDownAutomata("pda_init.txt");
 	RegularAutomata RA(initRegularAutomata);
 	RegularGrammar RG(initRegularGrammar);
 	PushDownAutomata PDA(initPushDownAutomata);

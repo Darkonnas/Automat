@@ -154,13 +154,14 @@
     <ClCompile Include="fla.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="push_down_automata_init.txt" />
-    <Text Include="regular_grammar.txt" />
-    <Text Include="regular_grammar_init.txt" />
+    <Text Include="pda_wwR.txt" />
+    <Text Include="pda_init.txt" />
+    <Text Include="rg.txt" />
+    <Text Include="rg_init.txt" />
     <Text Include="lamda.txt" />
-    <Text Include="regular_automata.txt" />
-    <Text Include="regular_automata_init.txt" />
-    <Text Include="push_down_automata.txt" />
+    <Text Include="ra.txt" />
+    <Text Include="ra_init.txt" />
+    <Text Include="pda.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

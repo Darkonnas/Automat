@@ -711,14 +711,17 @@ void PushDownAutomata::printConfiguration() {
 					std::cout << "d(" << std::get<0>(transition->first) << "," << std::get<1>(transition->first) << "," << std::get<2>(transition->first) << ")=(" << configuration->first << "," << *stackPush << ")\n";
 		else {
 			std::cout << "d(" << std::get<0>(transition->first) << "," << std::get<1>(transition->first) << "," << std::get<2>(transition->first) << ")={";
-			for (std::map<std::string, std::set<std::string>>::iterator configuration = transition->second.begin(); configuration != transition->second.end(); ++configuration)
+			for (std::map<std::string, std::set<std::string>>::iterator configuration = transition->second.begin(); configuration != transition->second.end(); ++configuration) {
 				for (std::set<std::string>::iterator stackPush = configuration->second.begin(); stackPush != configuration->second.end(); ++stackPush) {
 					std::cout << "(" << configuration->first << "," << *stackPush << ")";
-					std::map<std::string, std::set<std::string>>::iterator nextConfiguration = configuration;
 					std::set<std::string>::iterator nextStackPush = stackPush;
-					if (++nextConfiguration != transition->second.end() && ++nextStackPush != configuration->second.end())
+					if (++nextStackPush != configuration->second.end())
 						std::cout << ",";
 				}
+				std::map<std::string, std::set<std::string>>::iterator nextConfiguration = configuration;
+				if (++nextConfiguration != transition->second.end())
+					std::cout << ",";
+			}
 			std::cout << "}\n";
 		}
 	}

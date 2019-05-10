@@ -1,0 +1,30 @@
+3
+q0 q1 q2
+q0
+1
+q2
+3
+a b c
+4
+A B C Z
+Z
+19
+q0 a Z q0 AZ
+q0 a A q0 AA
+q0 a B q0 AB
+q0 a C q0 AC
+q0 b Z q0 BZ
+q0 b A q0 BA
+q0 b B q0 BB
+q0 b C q0 BC
+q0 c Z q0 CZ
+q0 c A q0 CA
+q0 c B q0 CB
+q0 c C q0 CC
+q0 a A q1 ~
+q0 b B q1 ~
+q0 c C q1 ~
+q1 a A q1 ~
+q1 b B q1 ~
+q1 c C q1 ~
+q1 ~ Z q2 ~

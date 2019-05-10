@@ -7,9 +7,9 @@
 using namespace std;
 
 int main() {
-	ifstream initMachine("machine_init.txt");
+	/*ifstream initMachine("machine_init.txt");
 	ifstream initGrammar("grammar_init.txt");
-	Machine M(initMachine);
+	RegularAutomata M(initMachine);
 	RegularGrammar RG(initGrammar);
 	initMachine.close(); initGrammar.close();
 	char choice;
@@ -17,7 +17,7 @@ int main() {
 		system("cls");
 		int decision;
 		do {
-			cout << "Please choose one of the options below:\n\t1. Initialize Machine from file\n\t2. Initialize Machine manually\n\t3. Initialize Machine from Grammar\n\t4. Print Machine configuration\n\t5. Evaluate words using Machine\n\t6. Initialize Grammar from file\n\t7. Initialize Grammar Manually\n\t8. Print Grammar configuration\n\t9. Evaluate words using Grammar\n\t10. Exit the program\nYour choice: ";
+			cout << "Please choose one of the options below:\n\t1. Initialize RegularAutomata from file\n\t2. Initialize RegularAutomata manually\n\t3. Initialize RegularAutomata from Grammar\n\t4. Print RegularAutomata configuration\n\t5. Evaluate words using RegularAutomata\n\t6. Initialize Grammar from file\n\t7. Initialize Grammar Manually\n\t8. Print Grammar configuration\n\t9. Evaluate words using Grammar\n\t10. Exit the program\nYour choice: ";
 			cin >> decision;
 			switch (decision) {
 			case 1: {
@@ -30,17 +30,17 @@ int main() {
 					if (!buffer.is_open())
 						cout << "Cannot open specified file!\n";
 				} while (!buffer.is_open());
-				Machine newMachine(buffer);
+				RegularAutomata newMachine(buffer);
 				M = newMachine;
 				break;
 			}
 			case 2: {
-				Machine newMachine;
+				RegularAutomata newMachine;
 				M = newMachine;
 				break;
 			}
 			case 3: {
-				Machine newMachine(RG);
+				RegularAutomata newMachine(RG);
 				M = newMachine;
 				break;
 			}
@@ -133,6 +133,8 @@ int main() {
 	}while (choice == 'Y');
 	if (choice == 'N') {
 		cout << "Have a good day!";
-	}
+	} */
+	ifstream pdaInput("push_down_automata.txt");
+	PushDownAutomata A(pdaInput);
 	return 0;
 }

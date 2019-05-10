@@ -38,6 +38,9 @@
     <Text Include="grammar_init.txt">
       <Filter>Resource Files</Filter>
     </Text>
+    <Text Include="push_down_automata.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="fla.h">

@@ -454,7 +454,7 @@ PushDownAutomata::PushDownAutomata() {
 	std::cout << "Stack Alphabet dimension: ";
 	std::cin >> stackAlphaDim;
 	std::cout << "Characters: ";
-	for (int i = 0; i < alphaDim; ++i) {
+	for (int i = 0; i < stackAlphaDim; ++i) {
 		char character;
 		std::cin >> character;
 		G.insert(character);
@@ -482,7 +482,7 @@ PushDownAutomata::PushDownAutomata() {
 			std::cin >> initState >> letter >> stackTop >> finState >> stackPush;
 			if (Q.find(initState) == Q.end() || (S.find(letter) == S.end() && letter != '~') || G.find(stackTop) == G.end() || Q.find(finState) == Q.end())
 				validTransition = false;
-			for (std::string::iterator character = stackPush.begin(); character != stackPush.end(); ++character)
+			for (std::string::iterator character = stackPush.begin(); character != stackPush.end() && *character != '~'; ++character)
 				if (G.find(*character) == G.end()) {
 					validTransition = false;
 					break;

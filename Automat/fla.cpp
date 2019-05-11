@@ -34,8 +34,8 @@ RegularAutomata::RegularAutomata() {
 	std::cout << "Transitions:  (format: initialState letter resultState !For lambda transitions use '~'!)\n";
 	for (int i = 0; i < transCount; ++i) {
 		std::string initState, finState;
-		char rule;
-		bool validTransition;
+		char rule = '~';
+		bool validTransition = false;
 		do {
 			validTransition = true;
 			std::cin >> initState >> rule >> finState;
@@ -252,8 +252,10 @@ void RegularAutomata::printConfiguration() {
 	else {
 		if (hasNondeterminism)
 			std::cout << "The machine contains nondeterminism!\n";
-		else
-			std::cout << "The machine contains lambda-transitions!\n";
+		else {
+			if(hasLambdaTransitions)
+				std::cout << "The machine contains lambda-transitions!\n";
+		}
 	}
 	std::cout << "Number of states: " << Q.size() << "\n";
 	std::cout << "States: ";
@@ -267,11 +269,11 @@ void RegularAutomata::printConfiguration() {
 	std::cout << "Transitions:\n";
 	for (std::map<std::pair<std::string, char>, std::set<std::string>>::iterator transition = d.begin(); transition != d.end(); ++transition) {
 		if (!hasNondeterminism)
-			for (std::set<std::string>::iterator state = (*transition).second.begin(); state != (*transition).second.end(); ++state)
-				std::cout << "d(" << (*transition).first.first << "," << (*transition).first.second << ")=" << *state << "\n";
+			for (std::set<std::string>::iterator state = transition->second.begin(); state != transition->second.end(); ++state)
+				std::cout << "d(" << transition->first.first << "," << transition->first.second << ")=" << *state << "\n";
 		else {
-			std::cout << "d(" << (*transition).first.first << "," << (*transition).first.second << ")={";
-			for (std::set<std::string>::iterator state = (*transition).second.begin(); state != (*transition).second.end();) {
+			std::cout << "d(" << transition->first.first << "," << transition->first.second << ")={";
+			for (std::set<std::string>::iterator state = transition->second.begin(); state != transition->second.end();) {
 				std::cout << *state;
 				if (++state != (*transition).second.end())
 					std::cout << ",";
@@ -681,8 +683,10 @@ void PushDownAutomata::printConfiguration() {
 	else {
 		if (hasNondeterminism)
 			std::cout << "The machine contains nondeterminism!\n";
-		else
-			std::cout << "The machine contains lambda-transitions!\n";
+		else {
+			if (hasLambdaTransitions)
+				std::cout << "The machine contains lambda-transitions!\n";
+		}
 	}
 	std::cout << "Number of states: " << Q.size() << "\n";
 	std::cout << "States: ";

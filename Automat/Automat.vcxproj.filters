@@ -26,9 +26,6 @@
     <Text Include="lamda.txt">
       <Filter>Resource Files</Filter>
     </Text>
-    <Text Include="pda.txt">
-      <Filter>Resource Files</Filter>
-    </Text>
     <Text Include="pda_init.txt">
       <Filter>Resource Files</Filter>
     </Text>
@@ -45,6 +42,9 @@
       <Filter>Resource Files</Filter>
     </Text>
     <Text Include="pda_wwR.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="pda.txt">
       <Filter>Resource Files</Filter>
     </Text>
   </ItemGroup>

@@ -17,11 +17,11 @@ class RegularAutomata {
 
 public:
 	RegularAutomata();
-	RegularAutomata(std::ifstream &buffer);
-	RegularAutomata(RegularGrammar &grammar);
-	std::set<std::string> lambdaClosure(std::string state);
-	bool Evaluate(std::string word);
-	void printConfiguration();
+	RegularAutomata(std::ifstream&);
+	RegularAutomata(const RegularGrammar&);
+	std::set<std::string> lambdaClosure(const std::string) const;
+	bool Evaluate(const std::string word) const;
+	void printConfiguration() const;
 	void convertToDFA();
 };
 
@@ -34,10 +34,10 @@ class RegularGrammar {
 
 public:
 	RegularGrammar();
-	RegularGrammar(std::ifstream &buffer);
-	RegularGrammar(RegularAutomata &machine);
-	bool Evaluate(std::string word);
-	void printConfiguration();
+	RegularGrammar(std::ifstream&);
+	RegularGrammar(const RegularAutomata&);
+	bool Evaluate(const std::string) const;
+	void printConfiguration() const;
 };
 
 class PushDownAutomata {
@@ -50,9 +50,9 @@ class PushDownAutomata {
 	bool hasLambdaTransitions;
 public:
 	PushDownAutomata();
-	PushDownAutomata(std::ifstream& buffer);
-	//PushDownAutomata(ContextFreeGrammar& grammar);
-	std::map<std::string, std::set<std::stack<char>>> lambdaClosure(std::pair<std::string, std::set<std::stack<char>>> initConfiguation);
-	bool Evaluate(std::string word);
-	void printConfiguration();
+	PushDownAutomata(std::ifstream&);
+	//PushDownAutomata(const ContextFreeGrammar& grammar);
+	std::map<std::string, std::set<std::stack<char>>> lambdaClosure(const std::pair<std::string, std::set<std::stack<char>>>) const;
+	bool Evaluate(const std::string) const;
+	void printConfiguration() const;
 };

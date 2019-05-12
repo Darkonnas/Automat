@@ -141,6 +141,7 @@ RegularAutomata::RegularAutomata(RegularGrammar& grammar) {
 	std::map<char, std::string> NonTermToState;
 	NonTermToState.insert(std::make_pair(grammar.S, "q0"));
 	Q.insert("q0");
+	q0 = "q0";
 	std::string stateCode = "q";
 	int currentState = 1;
 	for (std::set<char>::iterator currentNonTerm = grammar.N.begin(); currentNonTerm != grammar.N.end(); ++currentNonTerm) {
@@ -151,27 +152,12 @@ RegularAutomata::RegularAutomata(RegularGrammar& grammar) {
 		}
 	}
 	S = grammar.T;
-	q0 = grammar.S;
-	for (std::set<std::tuple<char, char, char>>::iterator currentProduction = grammar.P.begin(); currentProduction != grammar.P.end(); ++currentProduction) {
-		std::string initState = NonTermToState.at(std::get<0>(*currentProduction));
-		char rule = std::get<1>(*currentProduction);
-		if (rule != '~' && std::get<2>(*currentProduction) != 0) {
-			std::string destState = NonTermToState.at(std::get<2>(*currentProduction));
-			if (d.find(std::make_pair(initState, rule)) == d.end()) {
-				std::set<std::string> destStates;
-				destStates.insert(destState);
-				d.emplace(std::make_pair(initState, rule), destStates);
-			}
-			else {
-				hasNondeterminism = true;
-				d.at(std::make_pair(initState, rule)).insert(destState);
-			}
-		}
-		else {
-			if (rule != '~') {
-				std::string destState;
-				std::cout << "Input destination state (member of Q) manually for tranzition: d(" << initState << "," << rule << ")=";
-				std::cin >> destState;
+	for (std::map<char, std::set<std::pair<char, char>>>::iterator currentProduction = grammar.P.begin(); currentProduction != grammar.P.end(); ++currentProduction) {
+		std::string initState = NonTermToState.at(currentProduction->first);
+		for (std::set<std::pair<char, char>>::iterator rightHandSide = currentProduction->second.begin(); rightHandSide != currentProduction->second.end(); ++rightHandSide) {
+			char rule = rightHandSide->first;
+			if (rule != '~' && rightHandSide->second != 0) {
+				std::string destState = NonTermToState.at(rightHandSide->second);
 				if (d.find(std::make_pair(initState, rule)) == d.end()) {
 					std::set<std::string> destStates;
 					destStates.insert(destState);
@@ -181,10 +167,27 @@ RegularAutomata::RegularAutomata(RegularGrammar& grammar) {
 					hasNondeterminism = true;
 					d.at(std::make_pair(initState, rule)).insert(destState);
 				}
-				F.insert(destState);
 			}
 			else {
-				F.insert(initState);
+				if (rule != '~') {
+					std::string destState;
+					std::cout << "Input destination state (non-member of Q -> will be inserted) manually for tranzition: d(" << initState << "," << rule << ")=";
+					std::cin >> destState;
+					if (d.find(std::make_pair(initState, rule)) == d.end()) {
+						std::set<std::string> destStates;
+						destStates.insert(destState);
+						d.emplace(std::make_pair(initState, rule), destStates);
+					}
+					else {
+						hasNondeterminism = true;
+						d.at(std::make_pair(initState, rule)).insert(destState);
+					}
+					Q.insert(destState);
+					F.insert(destState);
+				}
+				else {
+					F.insert(initState);
+				}
 			}
 		}
 	}
@@ -211,6 +214,8 @@ std::set<std::string> RegularAutomata::lambdaClosure(std::string state) {
 }
 
 bool RegularAutomata::Evaluate(std::string word) {
+	if (word.size() == 1 && word.at(0) == '~' && F.find(q0) != F.end())
+		return true;
 	std::set<std::string> currentStates;
 	if (hasLambdaTransitions) {
 		currentStates = lambdaClosure(q0);
@@ -218,7 +223,7 @@ bool RegularAutomata::Evaluate(std::string word) {
 	else {
 		currentStates.insert(q0);
 	}
-	for (std::string::iterator letter = word.begin(); letter != word.end(); ++letter) {
+	for (std::string::iterator letter = word.begin(); letter != word.end() && !currentStates.empty(); ++letter) {
 		std::set<std::string> nextStates;
 		for (std::set<std::string>::iterator state = currentStates.begin(); state != currentStates.end(); ++state) {
 			std::map<std::pair<std::string, char>, std::set<std::string>>::iterator transition = d.find(std::make_pair(*state, *letter));
@@ -235,8 +240,6 @@ bool RegularAutomata::Evaluate(std::string word) {
 				currentStates.insert(closure.begin(), closure.end());
 			}
 		}
-		if (currentStates.empty())
-			return false;
 	}
 	for (std::set<std::string>::iterator state = currentStates.begin(); state != currentStates.end(); ++state) {
 		if (F.find(*state) != F.end())
@@ -261,6 +264,11 @@ void RegularAutomata::printConfiguration() {
 	std::cout << "States: ";
 	for (std::set<std::string>::iterator state = Q.begin(); state != Q.end(); ++state)
 		std::cout << *state << " ";
+	std::cout << "\nInitial state: " << q0 << "\n";
+	std::cout << "Number of final states: " << F.size() << "\n";
+	std::cout << "Final states: ";
+	for (std::set<std::string>::iterator state = F.begin(); state != F.end(); ++state)
+		std::cout << *state << " ";
 	std::cout << "\nAlphabet dimension: " << S.size() << "\n";
 	std::cout << "Letters: ";
 	for (std::set<char>::iterator letter = S.begin(); letter != S.end(); ++letter)
@@ -281,11 +289,6 @@ void RegularAutomata::printConfiguration() {
 			std::cout << "}\n";
 		}
 	}
-	std::cout << "Initial state: " << q0 << "\n";
-	std::cout << "Number of final states: " << F.size() << "\n";
-	std::cout << "Final states: ";
-	for (std::set<std::string>::iterator state = F.begin(); state != F.end(); ++state)
-		std::cout << *state << " ";
 	std::cout << "\n-----\n";
 }
 
@@ -325,7 +328,14 @@ RegularGrammar::RegularGrammar() {
 		prodStream >> initNonterm;
 		prodStream.ignore(2, '>');
 		prodStream >> Term >> destNonterm;
-		P.insert(std::make_tuple(initNonterm, Term, destNonterm));
+		if (P.find(initNonterm) == P.end()) {
+			std::set<std::pair<char, char>> auxSet;
+			auxSet.emplace(Term, destNonterm);
+			P.at(initNonterm) = auxSet;
+		}
+		else {
+			P.at(initNonterm).emplace(Term, destNonterm);
+		}
 	}
 	std::cout << "Generated Regular Grammar!\n";
 }
@@ -355,7 +365,14 @@ RegularGrammar::RegularGrammar(std::ifstream & buffer) {
 		prodStream >> initNonterm;
 		prodStream.ignore(2, '>');
 		prodStream >> Term >> destNonterm;
-		P.insert(std::make_tuple(initNonterm, Term, destNonterm));
+		if (P.find(initNonterm) == P.end()) {
+			std::set<std::pair<char, char>> auxSet;
+			auxSet.emplace(Term, destNonterm);
+			P.emplace(initNonterm, auxSet);
+		}
+		else {
+			P.at(initNonterm).emplace(Term, destNonterm);
+		}
 	}
 	std::cout << "Generated Regular Grammar!\n";
 	printConfiguration();
@@ -366,18 +383,20 @@ bool RegularGrammar::Evaluate(std::string word) {
 	currentNonterms.insert(S);
 	for (std::string::iterator letter = word.begin(); letter != word.end(); ++letter) {
 		std::set<char> nextNonterms;
-		for (std::set<std::tuple<char, char, char>>::iterator production = P.begin(); production != P.end(); ++production) {
-			char initNonterm = std::get<0>(*production);
-			char terminal = std::get<1>(*production);
-			char destNonterm = std::get<2>(*production);
-			if (currentNonterms.find(initNonterm) != currentNonterms.end() && terminal == *letter) {
-				nextNonterms.insert(destNonterm);
+		for (std::map<char, std::set<std::pair<char, char>>>::iterator production = P.begin(); production != P.end(); ++production) {
+			char initNonterm = production->first;
+			for (std::set<std::pair<char, char>>::iterator rightHandSide = production->second.begin(); rightHandSide != production->second.end(); ++rightHandSide) {
+				char terminal = rightHandSide->first;
+				char destNonterm = rightHandSide->second;
+				if (currentNonterms.find(initNonterm) != currentNonterms.end() && terminal == *letter) {
+					nextNonterms.insert(destNonterm);
+				}
 			}
 		}
 		currentNonterms = nextNonterms;
 	}
 	for (std::set<char>::iterator nonterm = currentNonterms.begin(); nonterm != currentNonterms.end(); ++nonterm) {
-		if (*nonterm == 0 || P.find(std::make_tuple(*nonterm, '~', 0)) != P.end())
+		if (*nonterm == 0 || P.at(*nonterm).find(std::make_pair('~', 0)) != P.at(*nonterm).end())
 			return true;
 	}
 	return false;
@@ -398,8 +417,17 @@ void RegularGrammar::printConfiguration() {
 	std::cout << "\nAxiom: " << S << '\n';
 	std::cout << "Productions count: " << P.size() << '\n';
 	std::cout << "Productions:\n";
-	for (std::set<std::tuple<char, char, char>>::iterator production = P.begin(); production != P.end(); ++production) {
-		std::cout << std::get<0>(*production) << "->" << std::get<1>(*production) << std::get<2>(*production) << '\n';
+	for (std::map<char, std::set<std::pair<char, char>>>::iterator production = P.begin(); production != P.end(); ++production) {
+		std::cout << production->first << "->";
+		for (std::set<std::pair<char, char>>::iterator rightHandSide = production->second.begin(); rightHandSide != production->second.end(); ++rightHandSide) {
+			std::cout << rightHandSide->first;
+			if(rightHandSide->second != 0)
+				std::cout<<rightHandSide->second;
+			std::set<std::pair<char, char>>::iterator nextRHS = rightHandSide;
+			if (++nextRHS != production->second.end())
+				std::cout << '|';
+		}
+		std::cout << '\n';
 	}
 	std::cout << "-----\n";
 }

@@ -30,7 +30,7 @@ class RegularGrammar {
 	std::set<char> N;
 	std::set<char> T;
 	char S;
-	std::set<std::tuple<char, char, char>> P;
+	std::map<char, std::set<std::pair<char, char>>> P;
 
 public:
 	RegularGrammar();

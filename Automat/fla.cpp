@@ -647,7 +647,7 @@ PushDownAutomata::PushDownAutomata(std::ifstream & buffer) {
 	printConfiguration();
 }
 
-std::map<std::string, std::set<std::stack<char>>> PushDownAutomata::lambdaClosure(const std::pair<std::string, std::set<std::stack<char>>> initConfiguration) const {
+std::map<std::string, std::set<std::stack<char>>> PushDownAutomata::lambdaClosure(const std::pair<std::string, std::set<std::stack<char>>>& initConfiguration) const {
 	std::map<std::string, std::set<std::stack<char>>> closureConfigurations;
 	closureConfigurations.emplace(initConfiguration.first, initConfiguration.second);
 	unsigned int cardinal = 0;

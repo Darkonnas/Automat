@@ -1,6 +1,5 @@
 //#include <vld.h>
 #include <iostream>
-#include <fstream>
 #include <string>
 #include <vector>
 #include "fla.h"
@@ -15,7 +14,7 @@ int main() {
 	initRegularAutomata.close(); initRegularGrammar.close(); initPushDownAutomata.close();
 	char choice;
 	do {
-		system("cls");
+//		system("cls");
 		int decision;
 		do {																													 
 			std::cout << "Please choose one of the options below:\n\t1. Initialize Regular Automata from file\n\t2. Initialize Regular Automata manually\n\t3. Initialize Regular Automata from Regular Grammar\n\t4. Print Regular Automata configuration\n\t5. Evaluate words using Regular Automata\n\t6. Initialize Regular Grammar from file\n\t7. Initialize Regular Grammar manually\n\t8. Initialize Regular Grammar from Regular Automata\n\t9. Print Regular Grammar configuration\n\t10. Evaluate words using Regular Grammar\n\t11. Initialize PushDown Automata from file\n\t12. Initialize PushDown Automata manually\n\t13. Print PushDown Automata configuration\n\t14. Evaluate words using PushDown Automata\n\t15. Exit the program\nYour choice: ";
